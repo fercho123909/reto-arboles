@@ -1,0 +1,293 @@
+Reto: ¿árbol sano o árbol en cadena?
+
+A continuación se presenta el código completo con comentarios para entender cada parte del reto y poder explicarlo correctamente.
+
+---------------------------------------------------------
+1) PARTE 1: CONSTRUIR EL ÁRBOL A
+---------------------------------------------------------
+
+El árbol A se arma con la raíz LTX, luego se agregan hijos izquierdos y derechos según el dibujo del reto.
+
+LTX
++-- I: ATF
+|   +-- I: TUA
+|   `-- D: IBB
+`-- D: MCH
+    +-- I: SNC
+    |   `-- I: LGQ
+    `-- D: OCC
+
+Código Java:
+
+```java
+package reto;
+
+import arboles.app.VistaArbol;
+import arboles.modelo.Nodo;
+import arboles.negocio.ArbolBinario;
+
+public class MainReto {
+
+    // Método que construye el árbol A pedido en el enunciado.
+    public static ArbolBinario<String> construirArbolA() {
+        ArbolBinario<String> arbol = new ArbolBinario<>();
+
+        // Raíz del árbol
+        Nodo<String> ltx = arbol.crearRaiz("LTX");
+
+        // Izquierdo y derecho de la raíz
+        Nodo<String> atf = arbol.agregarIzquierdo(ltx, "ATF");
+        Nodo<String> mch = arbol.agregarDerecho(ltx, "MCH");
+
+        // Subárbol izquierdo de ATF
+        arbol.agregarIzquierdo(atf, "TUA");
+        arbol.agregarDerecho(atf, "IBB");
+
+        // Subárbol derecho de MCH
+        Nodo<String> snc = arbol.agregarIzquierdo(mch, "SNC");
+        arbol.agregarDerecho(mch, "OCC");
+
+        // Hijo izquierdo de SNC
+        arbol.agregarIzquierdo(snc, "LGQ");
+
+        return arbol;
+    }
+```
+
+Explicación:
+- `crearRaiz` crea la raíz del árbol.
+- `agregarIzquierdo` y `agregarDerecho` agregan nodos hijos en cada rama.
+- Este árbol cumple con el dibujo del documento del reto.
+
+---------------------------------------------------------
+2) PARTE 2: CONSULTAR DATOS DEL ÁRBOL A
+---------------------------------------------------------
+
+Después de crear el árbol A, se necesita mostrar información importante:
+- raíz
+- cantidad de nodos
+- cantidad de hojas
+- altura
+- grado de nodos
+
+Código Java:
+
+```java
+    // Método que construye el árbol B, la cadena.
+    public static ArbolBinario<String> construirArbolB() {
+        ArbolBinario<String> arbol = new ArbolBinario<>();
+
+        // Raíz del árbol B
+        Nodo<String> gps = arbol.crearRaiz("GPS");
+
+        // Se forma una sola rama hacia la derecha
+        Nodo<String> scy = arbol.agregarDerecho(gps, "SCY");
+        Nodo<String> mrr = arbol.agregarDerecho(scy, "MRR");
+        Nodo<String> ptz = arbol.agregarDerecho(mrr, "PTZ");
+        arbol.agregarDerecho(ptz, "TPN");
+
+        return arbol;
+    }
+```
+
+Resultados esperados del árbol A:
+- Raíz: LTX
+- Cantidad de nodos: 8
+- Cantidad de hojas: 4
+- Altura: 3
+- Grado de LTX: 2
+- Grado de SNC: 1
+
+Código para imprimir esos datos:
+
+```java
+    public static void main(String[] args) {
+        ArbolBinario<String> arbolA = construirArbolA();
+        ArbolBinario<String> arbolB = construirArbolB();
+
+        System.out.println("== Parte 1: árbol A ==");
+        VistaArbol.mostrar(arbolA);
+
+        System.out.println();
+        System.out.println("== Parte 2: consultas del árbol A ==");
+        Nodo<String> raiz = arbolA.getRaiz();
+        System.out.println("raíz         -> " + raiz.getDato());
+        System.out.println("contarNodos  -> " + arbolA.contarNodos());
+        System.out.println("contarHojas  -> " + arbolA.contarHojas());
+        System.out.println("altura       -> " + arbolA.altura());
+        System.out.println("grado de LTX -> " + raiz.grado());
+        System.out.println("grado de SNC -> " + raiz.getDerecho().getIzquierdo().grado());
+```
+
+---------------------------------------------------------
+3) PARTE 3: CONSTRUIR EL ÁRBOL B Y DEFINIR esCadena
+---------------------------------------------------------
+
+El árbol B es una cadena porque cada nodo tiene solo un hijo derecho.
+
+GPS
+`-- D: SCY
+    `-- D: MRR
+        `-- D: PTZ
+            `-- D: TPN
+
+La definición del reto dice:
+"Un árbol es una cadena cuando su altura es igual a su cantidad de nodos menos 1."
+
+Código Java:
+
+```java
+    static boolean esCadena(ArbolBinario<String> arbol) {
+        // Si el árbol está vacío, NO es una cadena.
+        if (arbol.esVacio()) {
+            return false;
+        }
+
+        // La altura debe ser igual a la cantidad de nodos menos 1.
+        return arbol.altura() == arbol.contarNodos() - 1;
+    }
+```
+
+Explicación:
+- `esVacio()` evita que el caso del árbol vacío devuelva `true` por error.
+- En un árbol vacío, la altura vale -1 y nodos = 0, por eso se debe revisar antes.
+
+---------------------------------------------------------
+4) PRUEBAS Y CASOS LÍMITE
+---------------------------------------------------------
+
+El reto pide probar el método `esCadena` con el árbol A y el árbol B, además de casos límites.
+
+Código Java:
+
+```java
+        System.out.println();
+        System.out.println("== Parte 3: árbol B ==");
+        VistaArbol.mostrar(arbolB);
+        System.out.println("esCadena(A) -> " + esCadena(arbolA));
+        System.out.println("esCadena(B) -> " + esCadena(arbolB));
+        System.out.println("altura de B: " + arbolB.altura() + ", nodos de B: " + arbolB.contarNodos());
+        System.out.println("B se parece a una lista: buscar un código puede costar recorrer todos los nodos.");
+
+        System.out.println();
+        System.out.println("== Casos límite ==");
+        ArbolBinario<String> vacio = new ArbolBinario<>();
+        ArbolBinario<String> unNodo = new ArbolBinario<>();
+        unNodo.crearRaiz("SOL");
+        System.out.println("vacio -> " + esCadena(vacio));
+        System.out.println("unNodo -> " + esCadena(unNodo));
+
+        try {
+            Nodo<String> x = unNodo.getRaiz();
+            unNodo.agregarIzquierdo(x, "NUEVO");
+            unNodo.agregarIzquierdo(x, "OTRO");
+        } catch (IllegalStateException e) {
+            System.out.println("Error esperado: " + e.getMessage());
+        }
+    }
+}
+```
+
+Resultados esperados:
+- Árbol vacío -> false
+- Árbol de un solo nodo -> true
+- Agregar hijo donde ya hay uno -> error del árbol, sin romper el programa
+
+---------------------------------------------------------
+5) CONCLUSIÓN DEL RETO
+---------------------------------------------------------
+
+El árbol B se parece más a una lista o cadena, porque cada nodo solo tiene un hijo derecho.
+
+En una estructura así, buscar un dato puede requerir recorrer casi todos los nodos, como ocurre en una lista enlazada.
+
+Resultado final:
+- esCadena(A) = false
+- esCadena(B) = true
+
+---------------------------------------------------------
+6) CÓDIGO COMPLETO FINAL
+---------------------------------------------------------
+
+```java
+package reto;
+
+import arboles.app.VistaArbol;
+import arboles.modelo.Nodo;
+import arboles.negocio.ArbolBinario;
+
+public class MainReto {
+
+    public static ArbolBinario<String> construirArbolA() {
+        ArbolBinario<String> arbol = new ArbolBinario<>();
+        Nodo<String> ltx = arbol.crearRaiz("LTX");
+        Nodo<String> atf = arbol.agregarIzquierdo(ltx, "ATF");
+        Nodo<String> mch = arbol.agregarDerecho(ltx, "MCH");
+        arbol.agregarIzquierdo(atf, "TUA");
+        arbol.agregarDerecho(atf, "IBB");
+        Nodo<String> snc = arbol.agregarIzquierdo(mch, "SNC");
+        arbol.agregarDerecho(mch, "OCC");
+        arbol.agregarIzquierdo(snc, "LGQ");
+        return arbol;
+    }
+
+    public static ArbolBinario<String> construirArbolB() {
+        ArbolBinario<String> arbol = new ArbolBinario<>();
+        Nodo<String> gps = arbol.crearRaiz("GPS");
+        Nodo<String> scy = arbol.agregarDerecho(gps, "SCY");
+        Nodo<String> mrr = arbol.agregarDerecho(scy, "MRR");
+        Nodo<String> ptz = arbol.agregarDerecho(mrr, "PTZ");
+        arbol.agregarDerecho(ptz, "TPN");
+        return arbol;
+    }
+
+    public static void main(String[] args) {
+        ArbolBinario<String> arbolA = construirArbolA();
+        ArbolBinario<String> arbolB = construirArbolB();
+
+        System.out.println("== Parte 1: árbol A ==");
+        VistaArbol.mostrar(arbolA);
+
+        System.out.println();
+        System.out.println("== Parte 2: consultas del árbol A ==");
+        Nodo<String> raiz = arbolA.getRaiz();
+        System.out.println("raíz         -> " + raiz.getDato());
+        System.out.println("contarNodos  -> " + arbolA.contarNodos());
+        System.out.println("contarHojas  -> " + arbolA.contarHojas());
+        System.out.println("altura       -> " + arbolA.altura());
+        System.out.println("grado de LTX -> " + raiz.grado());
+        System.out.println("grado de SNC -> " + raiz.getDerecho().getIzquierdo().grado());
+
+        System.out.println();
+        System.out.println("== Parte 3: árbol B ==");
+        VistaArbol.mostrar(arbolB);
+        System.out.println("esCadena(A) -> " + esCadena(arbolA));
+        System.out.println("esCadena(B) -> " + esCadena(arbolB));
+        System.out.println("altura de B: " + arbolB.altura() + ", nodos de B: " + arbolB.contarNodos());
+        System.out.println("B se parece a una lista: buscar un código puede costar recorrer todos los nodos.");
+
+        System.out.println();
+        System.out.println("== Casos límite ==");
+        ArbolBinario<String> vacio = new ArbolBinario<>();
+        ArbolBinario<String> unNodo = new ArbolBinario<>();
+        unNodo.crearRaiz("SOL");
+        System.out.println("vacio -> " + esCadena(vacio));
+        System.out.println("unNodo -> " + esCadena(unNodo));
+
+        try {
+            Nodo<String> x = unNodo.getRaiz();
+            unNodo.agregarIzquierdo(x, "NUEVO");
+            unNodo.agregarIzquierdo(x, "OTRO");
+        } catch (IllegalStateException e) {
+            System.out.println("Error esperado: " + e.getMessage());
+        }
+    }
+
+    static boolean esCadena(ArbolBinario<String> arbol) {
+        if (arbol.esVacio()) {
+            return false;
+        }
+        return arbol.altura() == arbol.contarNodos() - 1;
+    }
+}
+```
